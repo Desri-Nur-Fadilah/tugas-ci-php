@@ -1,29 +1,36 @@
 pipeline {
-  agent any
-
-  stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/Desri-Nur-Fadilah/tugas-ci-php.git'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                powershell 'composer install'
+            }
+        }
+        stage('Run PHP') {
+            steps {
+                powershell 'php index.php'
+            }
+        }
+        stage('Run PHPUnit') {
+            steps {
+                powershell 'vendor\\bin\\phpunit tests'
+            }
+        }
     }
-
-    stage('Run PHP') {
-      steps {
-        powershell 'php index.php'
-      }
+    post {
+        always {
+            echo "Build selesai"
+        }
+        success {
+            echo "Build sukses ✅"
+        }
+        failure {
+            echo "Build gagal ❌"
+        }
     }
-
-    stage('Install Dependencies') {
-      steps {
-        powershell 'composer install'
-      }
-    }
-
-    stage('Run PHPUnit') {
-      steps {
-        powershell './vendor/bin/phpunit --testdox'
-      }
-    }
-  }
 }
